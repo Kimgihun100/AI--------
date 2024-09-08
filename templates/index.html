@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 상담 챗봇</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div>
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요...">
+            <button id="send-button">전송</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message) return; // 입력 메시지가 없으면 종료
+
+            // 사용자 메시지를 채팅에 추가
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<div><strong>나:</strong> ${message}</div>`;
+
+            // 입력 필드 초기화
+            input.value = '';
+
+            // 서버에 메시지 전송
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            const data = await response.json();
+            const botMessage = data.response;
+
+            // 챗봇 메시지를 채팅에 추가
+            messagesDiv.innerHTML += `<div><strong>AI:</strong> ${botMessage}</div>`;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // 스크롤을 맨 아래로 이동
+        });
+    </script>
+</body>
+</html>
